@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIVO | Panel de Captación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- PapaParse para CSV remotos Google Sheets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Phosphor Icons for aesthetic icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="ph-fill ph-graduation-cap"></i>
+                <h2>Grupo Educativo<span>UNIVO</span></h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="#" class="nav-item"><i class="ph ph-users"></i> Prospectos</a>
+                <a href="#" class="nav-item"><i class="ph ph-chart-line-up"></i> Reportes</a>
+                <a href="#" class="nav-item"><i class="ph ph-gear"></i> Configuración</a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">A</div>
+                <div class="user-info">
+                    <p class="name">Asesor Principal</p>
+                    <p class="role">Admin</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar prospectos por nombre, email...">
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn btn-outline" id="exportBtn"><i class="ph ph-download-simple"></i> Exportar a CSV</button>
+                    <button class="btn btn-primary"><i class="ph ph-plus"></i> Nuevo Registro</button>
+                </div>
+            </header>
+
+            <div class="welcome-section">
+                <h1>Resumen de Captación</h1>
+                <p>Monitoreo diario de avance y rendimiento del ciclo actual.</p>
+            </div>
+
+            <!-- KPIs -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="ph ph-funnel"></i></div>
+                    <div class="kpi-data">
+                        <h3>Total Leads</h3>
+                        <p class="value" id="kpi-total">1,248</p>
+                        <span class="trend positive"><i class="ph ph-trend-up"></i> +12% este mes</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon purple"><i class="ph ph-phone-call"></i></div>
+                    <div class="kpi-data">
+                        <h3>En Seguimiento</h3>
+                        <p class="value" id="kpi-active">482</p>
+                        <span class="trend neutral"><i class="ph ph-minus"></i> Activos</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon success"><i class="ph ph-check-circle"></i></div>
+                    <div class="kpi-data">
+                        <h3>Matriculados</h3>
+                        <p class="value" id="kpi-enrolled">156</p>
+                        <span class="trend positive"><i class="ph ph-trend-up"></i> +5% este mes</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon warning"><i class="ph ph-chart-pie-slice"></i></div>
+                    <div class="kpi-data">
+                        <h3>Tasa de Conversión</h3>
+                        <p class="value" id="kpi-conversion">12.5%</p>
+                        <span class="trend positive"><i class="ph ph-trend-up"></i> +1.2% global</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container box-shadow">
+                    <h3>Tendencia de Captación (Mensual)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container box-shadow">
+                    <h3>Origen de Prospectos</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="sourceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Table -->
+            <section class="data-section box-shadow">
+                <div class="data-header">
+                    <h3>Listado General de Aspirantes</h3>
+                    <div class="filters">
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">Todos los Estados</option>
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Contactado">Contactado</option>
+                            <option value="Evaluación">En Evaluación</option>
+                            <option value="Matriculado">Matriculado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="prospectsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre Completo</th>
+                                <th>Contacto</th>
+                                <th>Programa de Interés</th>
+                                <th>Origen</th>
+                                <th>Estado</th>
+                                <th>Asesor Asignado</th>
+                                <th>Fecha Reg.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+    <!-- TOAST NOTIFICATION PARA NUEVO PROSPECTO -->
+    <div id="dashboardToast" class="toast-notification">
+        <div class="toast-icon">
+            <i class="ph-fill ph-bell-ringing"></i>
+        </div>
+        <div class="toast-text">
+            <h4>¡Nuevo Prospecto Registrado!</h4>
+            <p>Se ha recibido un nuevo formulario desde la web.</p>
+        </div>
+    </div>
+
+    <!-- Scripts de funcionalidad -->
+    <script src="app.js"></script>
+</body>
+</html>

@@ -77,110 +77,6 @@ async function fetchSheetData() {
 }
 
 
-// Fetching Remote CSV Data
-// Reemplazo por problema CORS
-//async function fetchSheetData() {
-  //  if (!GOOGLE_SHEET_CSV_URL || !GOOGLE_SHEET_CSV_URL.startsWith('http')) {
-  //      console.warn("No hay URL de Google Sheets detectada. Se usarán datos de simulación.");
-  //      leadsData = localMockData;
-  //      processData(leadsData);
-  //      return;
-  //  }
-
-  //  let fetchUrl = GOOGLE_SHEET_CSV_URL;
-    // Correccion definitiva CORS: Forzar evitar cache y usar proxy como fallback
-  //  const noCacheUrl = fetchUrl + (fetchUrl.includes('?') ? '&' : '?') + 'nocache=' + new Date().getTime();
-
-  //  const processCSVText = (csvText) => {
-  //      Papa.parse(csvText, {
-  //          header: true,
-  //          skipEmptyLines: true,
-  //          transformHeader: function(h) {
-  //              // Elimina espacios o caracteres extranos (BOM) en los titulos
-  //              return h.replace(/^\uFEFF/, '').trim();
-  //          },
-  //          complete: function(results) {
-  //              leadsData = results.data.filter(row => row.Nombre || row.ID); 
-                
-                // Logica de Deteccion (Nuevos Registros)
-    //            if (previousTotal !== -1 && leadsData.length > previousTotal) {
-    //                showDashboardToast();
-    //            }
-    //            previousTotal = leadsData.length;
-                
-    //            processData(leadsData);
-    //        }
-    //    });
-    //};
-
-    //try {
-    //    // 1er Intento: Peticion directa
-    //    const response = await fetch(noCacheUrl, {
-    //        method: 'GET',
-    //        mode: 'cors'
-    //    });
-        
-    //    if (!response.ok) throw new Error("CORS o error de red en peticion web principal");
-        
-    //    const csvText = await response.text();
-    //    processCSVText(csvText);
-
-    //} catch (err) {
-    //    console.warn("Intento directo fallido. Ejecutando conexion usando Proxy de respaldo...", err);
-    //    try {
-    //        // 2do Intento: Utilizar un proxy Publico de CORS (allOrigins)
-    //        const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(noCacheUrl);
-    //        const proxyResponse = await fetch(proxyUrl);
-            
-    //        if (!proxyResponse.ok) throw new Error("El sistema proxy no pudo recuperar el documento.");
-            
-    //        const proxyText = await proxyResponse.text();
-    //        processCSVText(proxyText);
-    //    } catch (proxyError) {
-    //        console.error("Fallaron ambas conexiones:", proxyError);
-    //        alert("No fue posible cargar los datos desde Google Sheets.\nError CORS detectado incluso en backup.\nVerifica que la hoja sea 'Publica en la web'.");
-    //    }
-    //}
-//}  Reemplazo por problema CORS
-
-// Fetching Remote CSV Data (Nativo)
-//function fetchSheetData() {
-//    if (!GOOGLE_SHEET_CSV_URL || !GOOGLE_SHEET_CSV_URL.startsWith('http')) {
-//        console.warn("No hay URL web de Google Sheets. Se usarán datos locales.");
-//        leadsData = localMockData;
-//        processData(leadsData);
-//        return;
-//    }
-
-    // Le pedimos a PapaParse que descargue directamente el CSV, evitando problemas de CORS en modo local
-//    Papa.parse(GOOGLE_SHEET_CSV_URL, {
-//        download: true, // Esto hace la magia transparente
-//        header: true,
-//        skipEmptyLines: true,
-//        transformHeader: function(h) {
-//            return h.replace(/^\uFEFF/, '').trim(); // Limpia caracteres invisibles
-//        },
-//        complete: function(results) {
-//            // Filtramos las filas vacías
-//            leadsData = results.data.filter(row => row.Nombre || row.ID); 
-//            
-//            // Logica de Alerta Toast solo si hay prospectos nuevos
-//            if (previousTotal !== -1 && leadsData.length > previousTotal) {
-//                showDashboardToast();
-//            }
-//            previousTotal = leadsData.length;
-            
-            // Enviamos la data a la vista!
-//            processData(leadsData);
-//        },
-//        error: function(err) {
-//            console.warn("PapaParse no pudo conectarse. Google requiere hasta 5 minutos a veces tras publicar por 1ra vez.", err);
-//        }
-//    });
-//}
-
-
-
 // Master Procesamiento de Datos
 function processData(data) {
     renderTable(data);
@@ -206,6 +102,7 @@ function renderTable(data) {
         const email = lead.Email || '--';
         const program = lead.Programa || '--';
         const source = lead.Origen || '--';
+        const system = lead.Sistema || '--';
         const status = lead.Estado || '--';
         const assigned = lead.Asesor || '--';
         const date = lead.Fecha || '--';

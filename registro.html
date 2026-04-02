@@ -150,7 +150,7 @@
             <div class="register-header">
                 <div class="logo-container">
                     <i class="ph-fill ph-graduation-cap"></i>
-                    <h2>Grupo Educativo<span>UNIVO</span></h2>
+                    <h2>Grupo Educativo<span>UniVO</span></h2>
                 </div>
                 <h1>Registro de Aspirante</h1>
                 <p>Ingresa tus datos para comenzar tu proceso de admisión y recibir información sobre nuestros programas.</p>
@@ -242,12 +242,13 @@
             const formData = new FormData(this);
 
             const telefonoIngresado = formData.get('telefono');
-            const tieneWhatsapp = document.getElementById('tieneWhatsapp').checked ? ' (WA)' : '';
+            const tieneWhatsapp = document.getElementById('tieneWhatsapp').checked;
 
             const datos = {
                 ID: generarID(),
                 Nombre: formData.get('nombre'),
-                Telefono: telefonoIngresado + tieneWhatsapp,
+                Telefono: telefonoIngresado,
+                WhatsApp: tieneWhatsapp ? "VERDADERO" : "FALSO",
                 Email: formData.get('email'),
                 Programa: formData.get('programa'),
                 Origen: formData.get('origen'),

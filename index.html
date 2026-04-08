@@ -3,9 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNIVO | Panel de Captación</title>
+    <title>UNIVO | Panel de Captación (Mobile Menu)</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .mobile-menu-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .mobile-backdrop {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: inline-flex;
+            }
+
+            .sidebar {
+                display: none;
+                width: 260px;
+                min-width: 260px;
+                z-index: 20;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.mobile-open {
+                display: flex;
+                transform: translateX(0);
+            }
+
+            .mobile-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 15;
+            }
+
+            .mobile-backdrop.visible {
+                display: block;
+            }
+        }
+    </style>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- PapaParse para CSV remotos Google Sheets -->
@@ -40,6 +93,9 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="topbar">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">
+                    <i class="ph ph-list"></i>
+                </button>
                 <div class="search-bar">
                     <i class="ph ph-magnifying-glass"></i>
                     <input type="text" id="searchInput" placeholder="Buscar prospectos por nombre, email...">
@@ -144,6 +200,8 @@
         </main>
     </div>
 
+    <div class="mobile-backdrop" id="mobileBackdrop"></div>
+
     <!-- TOAST NOTIFICATION PARA NUEVO PROSPECTO -->
     <div id="dashboardToast" class="toast-notification">
         <div class="toast-icon">
@@ -157,5 +215,23 @@
 
     <!-- Scripts de funcionalidad -->
     <script src="app.js"></script>
+    <script>
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.querySelector('.sidebar');
+        const backdrop = document.getElementById('mobileBackdrop');
+
+        const toggleMenu = () => {
+            sidebar.classList.toggle('mobile-open');
+            backdrop.classList.toggle('visible');
+        };
+
+        const closeMenu = () => {
+            sidebar.classList.remove('mobile-open');
+            backdrop.classList.remove('visible');
+        };
+
+        menuBtn?.addEventListener('click', toggleMenu);
+        backdrop?.addEventListener('click', closeMenu);
+    </script>
 </body>
 </html>

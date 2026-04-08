@@ -25,16 +25,6 @@ let sourceChartInstance = null;
 let previousTotal = -1; // Variables para Auto-Polling
 
 // Helpers
-function showDashboardToast() {
-    const toast = document.getElementById('dashboardToast');
-    if(toast) {
-        toast.classList.add('show');
-        // Sonido de alerta sutil opcional (Requiere interacción previa del usuario)
-        // new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(e => {}); 
-        setTimeout(() => toast.classList.remove('show'), 5000);
-    }
-}
-
 function getStatusBadgeClass(status) {
     if(!status) return '';
     const st = status.toLowerCase();
@@ -65,7 +55,7 @@ async function fetchSheetData() {
         
         // ¡Magia! Dispara la campanita si hay nuevos capturados
         if (previousTotal !== -1 && leadsData.length > previousTotal) {
-            showDashboardToast();
+            alert("¡Nuevo Prospecto Registrado! Se ha recibido un nuevo formulario desde la web.");
         }
         previousTotal = leadsData.length;
         
@@ -90,13 +80,13 @@ function renderTable(data) {
     tableBody.innerHTML = '';
     
     if(!data || data.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No se encontraron prospectos</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No se encontraron prospectos</td></tr>`;
         return;
     }
 
     data.forEach(lead => {
         // Fallback robusto en caso de que alguna columna falte
-        const id = lead.ID || '--';
+                const id = lead.ID || '--';
         const name = lead.Nombre || '--';
         const phone = lead.Telefono || '--';
         const email = lead.Email || '--';
@@ -104,8 +94,23 @@ function renderTable(data) {
         const source = lead.Origen || '--';
         const system = lead.Sistema || '--';
         const status = lead.Estado || '--';
-        const assigned = lead.Asesor || '--';
-        const date = lead.Fecha || '--';
+        let formattedDate = lead.Fecha || '--';
+
+        if (formattedDate !== '--') {
+            const mesesStr = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            let parsedDate = new Date(formattedDate);
+            if (!isNaN(parsedDate.getTime())) {
+                let dd = String(parsedDate.getDate()).padStart(2, '0');
+                let mm = mesesStr[parsedDate.getMonth()];
+                formattedDate = `${dd}-${mm}`;
+            } else if (typeof formattedDate === 'string') {
+                let parts = formattedDate.split(/[ \/-]/);
+                if (parts.length >= 2) {
+                    let dStr = String(parts[0]).padStart(2, '0');
+                    formattedDate = `${dStr}-${parts[1]}`;
+                }
+            }
+        }
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -118,8 +123,7 @@ function renderTable(data) {
             <td>${program}</td>
             <td>${source}</td>
             <td><span class="badge ${getStatusBadgeClass(status)}">${status}</span></td>
-            <td>${assigned}</td>
-            <td>${date}</td>
+            <td>${formattedDate}</td>
         `;
         tableBody.appendChild(tr);
     });
